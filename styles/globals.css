@@ -8,8 +8,18 @@
 /* globals.css */
 .layout-background {
     background: linear-gradient(291.34deg, #010101 0%, #4D4D4D 100%);
-    min-height: 100vh; /* Ensures full viewport height */
-    background-size: cover; /* Ensures the gradient covers the full screen */
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    min-height: 100vh; 
+    background-size: cover; 
+    background-attachment: fixed; 
   }
-  
+   
+
+input:invalid:focus {
+  outline: none !important;
+}
+
+
+input:invalid + .error-message {
+  display: block;
+  color: red;
+}

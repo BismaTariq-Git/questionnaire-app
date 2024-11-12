@@ -6,18 +6,34 @@ import supabase from '../utils/supabaseClient';
 const Step3 = () => {
   const [selectedScores, setSelectedScores] = useState({ comfort: null, looks: null, price: null });
   const [errors, setErrors] = useState({ comfort: false, looks: false, price: false });
-
   const router = useRouter();
   const { email } = router.query;
 
   useEffect(() => {
     const fetchProgress = async () => {
-      if (!email) return; 
+      if (!email) return;
 
       try {
-        console.log('Fetching survey progress for email:', email); 
-        const response = await axios.get(`http://localhost:5001/api/survey/progress?email=${email}`);
-        console.log('Survey progress:', response.data);
+       
+        const { data, error } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (error) {
+          console.error("Error fetching data:", error);
+          return;
+        }
+
+        if (data && data.data.step3) {
+          
+          setSelectedScores({
+            comfort: data.data.step3.comfort || null,
+            looks: data.data.step3.looks || null,
+            price: data.data.step3.price || null,
+          });
+        }
       } catch (error) {
         console.error('Error fetching survey progress:', error);
       }
@@ -33,7 +49,7 @@ const Step3 = () => {
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [aspect]: false, 
+      [aspect]: false,
     }));
   };
 
@@ -46,54 +62,48 @@ const Step3 = () => {
     };
     setErrors(newErrors);
 
-    
     if (!Object.values(newErrors).includes(true)) {
       try {
-        
         const { data, error } = await supabase
           .from('questions')
           .select('*')
           .eq('email', email)
-          .single(); 
+          .single();
 
         if (error) {
           console.error("Error fetching data:", error);
           return;
         }
 
-    
         const updatedData = {
-          ...data.data,  
-          step3: selectedScores,  
+          ...data.data,
+          step3: selectedScores,
         };
 
-       
         const { error: upsertError } = await supabase
           .from('questions')
           .upsert({
             email,
-            data: updatedData,  
-            step: 3,  
-            status: 'completed',  
-          }, { onConflict: ['email'] });  
+            data: updatedData,
+            step: 3,
+            status: 'completed',
+          }, { onConflict: ['email'] });
 
         if (upsertError) {
           console.error('Error updating survey:', upsertError);
           return;
         }
 
-    
         try {
           const response = await axios.post('http://localhost:5001/api/survey/submit-survey', {
             email,
-            step1: data.data.step1,  
-            step2: data.data.step2,  
-            step3: selectedScores,   
+            step1: data.data.step1,
+            step2: data.data.step2,
+            step3: selectedScores,
           });
 
-          
           if (response.status === 200) {
-            router.push('/thank-you');
+            router.push(`/thank-you?email=${email}`);
           } else {
             console.error('Failed to submit survey:', response.data);
           }
@@ -107,7 +117,7 @@ const Step3 = () => {
   };
 
   const handleBack = () => {
-    router.push(`/page2?email=${email}`); 
+    router.push(`/page2?email=${email}`);
   };
 
   return (
@@ -132,22 +142,25 @@ const Step3 = () => {
               </div>
             </div>
             {errors[aspect] && (
-              <p className="text-red-500  text-left mt-2 text-sm">Please select a score</p>
+              <p className="text-red-500 text-left mt-2 text-sm">Please select a score</p>
             )}
           </div>
         ))}
-        <div className="flex justify-between pt-6">
-          <button className="bg-pink-200 text-gray-800 px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200" 
-          onClick={handleBack}>
-             ↖️  Back
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="bg-white text-gray-800 px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200"
-          >
-            Send  ↗️
-          </button>
-        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+  <button
+    className="bg-pink-200 text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
+    onClick={handleBack}
+  >
+    ↖️ Back
+  </button>
+  <button
+    onClick={handleSubmit}
+    className="bg-white text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
+  >
+    Send ↗️
+  </button>
+</div>
+
       </div>
     </div>
   );

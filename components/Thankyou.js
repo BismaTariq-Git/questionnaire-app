@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import supabase from "../utils/supabaseClient";
 import Image from "next/image";
-import shoeImage from "../public/shoe.png";
+import shoeImage from "../public/Shoe.png";
 import unionShape from "../public/arrow.png";
 
 const ThankYou = () => {

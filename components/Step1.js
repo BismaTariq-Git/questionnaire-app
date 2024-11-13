@@ -94,7 +94,7 @@ const Step1 = () => {
           <div className="bg-pink-200 p-4 rounded-lg text-gray-800 mb-6">
             <h2 className="text-lg font-semibold">Welcome!</h2>
             <p className="text-sm">
-              We're excited to hear your thoughts, ideas, and insights! Your
+              We&apos;re excited to hear your thoughts, ideas, and insights! Your
               genuine feedback is invaluable to us!
             </p>
           </div>

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
 import supabase from "../utils/supabaseClient";
 import Image from "next/image";
 import shoeImage from "../public/Shoe.png";
@@ -16,6 +17,8 @@ const ThankYou = () => {
         return;
       }
 
+      console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL); // Debugging line
+
       // Fetch data from Supabase using email
       const { data } = await supabase
         .from("questions")
@@ -25,21 +28,29 @@ const ThankYou = () => {
 
       if (!data) return;
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/survey/submit-survey`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          step1: data.data.step1,
-          step2: data.data.step2,
-        }),
-      });
+      try {
+        // Use axios to submit the data to the backend API
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/survey/submit-survey`,
+          {
+            email,
+            step1: data.data.step1,
+            step2: data.data.step2,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
-      if (response.ok) {
-        await supabase
-          .from("questions")
-          .update({ status: "completed" })
-          .eq("email", email);
+        // If the request is successful, update status in Supabase
+        if (response.status === 200) {
+          await supabase
+            .from("questions")
+            .update({ status: "completed" })
+            .eq("email", email);
+        }
+      } catch (error) {
+        console.error("Error submitting data:", error);
       }
     };
 
@@ -47,11 +58,9 @@ const ThankYou = () => {
     if (email) {
       submitToMongoDB();
     }
-
   }, [email]);
 
   const handleBack = () => {
-    // Check if email exists and redirect back to the appropriate page
     if (email) {
       router.push(`/page2?email=${email}`);
     } else {
@@ -103,7 +112,7 @@ const ThankYou = () => {
           <div className="flex justify-center sm:justify-start gap-4">
             <button
               onClick={handleBack}
-              className="bg-[#EDB6D2] text-black font-bold  px-6 py-3 rounded-full transition hover:bg-pink-600"
+              className="bg-[#EDB6D2] text-black font-bold px-6 py-3 rounded-full transition hover:bg-pink-600"
             >
               ↖️ Back
             </button>

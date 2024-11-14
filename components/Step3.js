@@ -6,6 +6,7 @@ import supabase from '../utils/supabaseClient';
 const Step3 = () => {
   const [selectedScores, setSelectedScores] = useState({ comfort: null, looks: null, price: null });
   const [errors, setErrors] = useState({ comfort: false, looks: false, price: false });
+  const [loading, setLoading] = useState(false); // Add loading state
   const router = useRouter();
   const { email } = router.query;
 
@@ -14,7 +15,6 @@ const Step3 = () => {
       if (!email) return;
 
       try {
-       
         const { data, error } = await supabase
           .from('questions')
           .select('*')
@@ -27,7 +27,6 @@ const Step3 = () => {
         }
 
         if (data && data.data.step3) {
-          
           setSelectedScores({
             comfort: data.data.step3.comfort || null,
             looks: data.data.step3.looks || null,
@@ -63,6 +62,8 @@ const Step3 = () => {
     setErrors(newErrors);
 
     if (!Object.values(newErrors).includes(true)) {
+      setLoading(true); // Set loading to true when submission starts
+
       try {
         const { data, error } = await supabase
           .from('questions')
@@ -72,6 +73,7 @@ const Step3 = () => {
 
         if (error) {
           console.error("Error fetching data:", error);
+          setLoading(false); // Reset loading state on error
           return;
         }
 
@@ -91,16 +93,25 @@ const Step3 = () => {
 
         if (upsertError) {
           console.error('Error updating survey:', upsertError);
+          setLoading(false); // Reset loading state on error
           return;
         }
 
         try {
-          const response = await axios.post('http://localhost:5001/api/survey/submit-survey', {
-            email,
-            step1: data.data.step1,
-            step2: data.data.step2,
-            step3: selectedScores,
-          });
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/survey/submit-survey`,
+            {
+              email,
+              step1: data.data.step1,
+              step2: data.data.step2,
+              step3: selectedScores,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
 
           if (response.status === 200) {
             router.push(`/thank-you?email=${email}`);
@@ -112,6 +123,8 @@ const Step3 = () => {
         }
       } catch (error) {
         console.error('Error submitting survey:', error);
+      } finally {
+        setLoading(false); // Reset loading state after submission attempt
       }
     }
   };
@@ -123,7 +136,7 @@ const Step3 = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#4D4D4D] to-[#010101] p-4">
       <div className=" max-w-lg w-full p-6 text-center space-y-6">
-        <h2 className="text-white font-bold  uppercase text-xs tracking-wide">Question 2</h2>
+        <h2 className="text-white font-bold uppercase text-xs tracking-wide">Question 2</h2>
         <h1 className="text-xl font-semibold text-white">
           How important are these aspects for you?
         </h1>
@@ -147,20 +160,37 @@ const Step3 = () => {
           </div>
         ))}
         <div className="flex flex-col sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
-  <button
-    className="bg-pink-200 text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
-    onClick={handleBack}
-  >
-    ↖️ Back
-  </button>
-  <button
-    onClick={handleSubmit}
-    className="bg-white text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
-  >
-    Send ↗️
-  </button>
-</div>
-
+          <button
+            className="bg-pink-200 text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
+            onClick={handleBack}
+          >
+            ↖️ Back
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading} // Disable button when loading
+            className="bg-white text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base flex items-center justify-center"
+          >
+            {loading ? (
+              <svg
+                className="w-5 h-5 animate-spin mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4v4m0 0l2-2m-2 2l-2-2m2 0l2 2"
+                />
+              </svg>
+            ) : (
+              'Send ↗️'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -133,7 +133,7 @@ const Step2 = () => {
         className="text-center font-signika font-bold text-[16.01px] leading-[19.72px] mb-2 decoration-white underline-offset-2"
         style={{ color: "#B6B6B6" }}
       >
-        Question 2
+        Question 1
       </h3>
       <h2 className="text-xl font-bold mb-4">What is your preferred choice?</h2>
 

@@ -4,7 +4,6 @@ import supabase from "../utils/supabaseClient";
 import blackShoe from "../public/black.png";
 import OrangeShoe from "../public/orangeshoe.png";
 import Image from "next/image";
-
 const Step2 = () => {
   const [choice, setChoice] = useState("");
   const [surveyData, setSurveyData] = useState({});
@@ -173,19 +172,52 @@ const Step2 = () => {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="flex gap-20 justify-center">
-        <button
-          onClick={handlePrevious}
-          className="bg-pink-200 px-6 py-3  text-black font-bold rounded-full hover:bg-gray-700 transition"
-        >
-          ↖️ Back
-        </button>
-        <button
-          onClick={handleNext}
-          className="bg-lime-400 px-6 py-3 text-black font-bold rounded-full hover:bg-lime-500 transition"
-        >
-          Next ↗️
-        </button>
-      </div>
+  <button
+    onClick={handlePrevious}
+    className="bg-pink-200 px-6 py-3 text-black font-bold rounded-full hover:bg-gray-700 transition flex items-center gap-2"
+  >
+    <svg
+      width="24"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="icon"
+    >
+      <path
+        d="M20 20L4 4M4 4V16M4 4H16"
+        stroke="currentColor"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+    Back
+  </button>
+  <button
+    onClick={handleNext}
+    className="bg-lime-400 px-6 py-3 text-black font-bold rounded-full hover:bg-lime-500 transition flex items-center gap-2"
+  >
+    Next
+    <svg
+      width="24"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="icon"
+    >
+      <path
+        d="M4 20L20 4M20 4V16M20 4H8"
+        stroke="currentColor"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </button>
+</div>
+
     </div>
   );
 };

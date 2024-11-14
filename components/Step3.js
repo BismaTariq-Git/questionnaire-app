@@ -161,10 +161,26 @@ const Step3 = () => {
         ))}
         <div className="flex flex-col sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
           <button
-            className="bg-pink-200 text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base"
             onClick={handleBack}
+            className="bg-pink-200 px-6 py-3 text-black font-bold rounded-full hover:bg-gray-700 transition flex items-center gap-2"
           >
-            ↖️ Back
+            <svg
+              width="24"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="icon"
+            >
+              <path
+                d="M20 20L4 4M4 4V16M4 4H16"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Back
           </button>
           <button
             onClick={handleSubmit}
@@ -187,7 +203,9 @@ const Step3 = () => {
                 />
               </svg>
             ) : (
-              'Send ↗️'
+              <>
+                Submit <span className="ml-2">↗️</span>
+              </>
             )}
           </button>
         </div>
@@ -195,5 +213,6 @@ const Step3 = () => {
     </div>
   );
 };
+
 
 export default Step3;

@@ -110,18 +110,52 @@ const ThankYou = () => {
           </p>
 
           <div className="flex justify-center sm:justify-start gap-4">
-            <button
-              onClick={handleBack}
-              className="bg-[#EDB6D2] text-black font-bold px-6 py-3 rounded-full transition hover:bg-pink-600"
-            >
-              ↖️ Back
-            </button>
-            <button
-              onClick={() => router.push("/")}
-              className="bg-white text-black font-bold px-6 py-3 rounded-full transition hover:bg-green-600"
-            >
-              Back to Home ↗️
-            </button>
+          <button
+  onClick={handleBack}
+  className="bg-[#EDB6D2] text-black font-bold px-6 py-3 rounded-full transition hover:bg-[#EDB6D2] flex items-center gap-2"
+>
+  <svg
+    width="24"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="icon"
+  >
+    <path
+      d="M4 20L20 4M20 4V16M20 4H8"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+  Back
+</button>
+
+<button
+  onClick={() => router.push("/")}
+  className="bg-white text-black font-bold px-6 py-3 rounded-full transition hover:bg-lime-400 flex items-center gap-2"
+>
+  Back to Home
+  <svg
+    width="24"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="icon"
+  >
+    <path
+      d="M4 20L20 4M20 4V16M20 4H8"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</button>
+
           </div>
         </div>
       </div>

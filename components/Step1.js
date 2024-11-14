@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import shoeImage from "../public/Shoe.png"
@@ -10,6 +10,11 @@ const Step1 = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefillEmail = urlParams.get("email");
+    if (prefillEmail) setEmail(prefillEmail);
+  }, []);
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -20,42 +25,61 @@ const Step1 = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
   
     if (!email) {
       setError("Please enter your email.");
       setLoading(false);
       return;
     }
-
+  
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       setLoading(false);
       return;
     }
-
+  
     try {
-      const { data, error } = await supabase
-        .from("questions")
-        .select("status, step")
-        .eq("email", email)
-        .limit(1);
-
-      if (error) {
-        console.error("Error checking survey status:", error.message);
-        setError("An error occurred while checking your survey status.");
-        setLoading(false);
-        return;
-      }
-
-      const userProgress = data[0];
-
-      if (userProgress?.status === "completed") {
-        router.push("/thank-you");
-      } else if (userProgress?.status === "in-progress") {
-        router.push(`/page${userProgress.step }?email=${email}`);
+      // Check if email matches the existing survey state
+      const existingProgress = sessionStorage.getItem("surveyProgress");
+      if (existingProgress && JSON.parse(existingProgress).email === email) {
+        const { step, status } = JSON.parse(existingProgress);
+        if (status === "completed") {
+          router.push("/thank-you");
+        } else if (status === "in-progress") {
+          router.push(`/page${step}?email=${email}`);
+        } else {
+          router.push(`/page2?email=${email}`);
+        }
       } else {
-        router.push(`/page2?email=${email}`);
+        // Proceed with the Supabase query if session storage is not set or email is new
+        const { data, error } = await supabase
+          .from("questions")
+          .select("status, step")
+          .eq("email", email)
+          .limit(1);
+  
+        if (error) {
+          console.error("Error checking survey status:", error.message);
+          setError("An error occurred while checking your survey status.");
+          setLoading(false);
+          return;
+        }
+  
+        const userProgress = data[0];
+        const surveyData = {
+          email,
+          step: userProgress?.step || 2,
+          status: userProgress?.status || "new",
+        };
+        sessionStorage.setItem("surveyProgress", JSON.stringify(surveyData));
+  
+        if (userProgress?.status === "completed") {
+          router.push("/thank-you");
+        } else if (userProgress?.status === "in-progress") {
+          router.push(`/page${userProgress.step}?email=${email}`);
+        } else {
+          router.push(`/page2?email=${email}`);
+        }
       }
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -64,6 +88,7 @@ const Step1 = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-800 to-black">

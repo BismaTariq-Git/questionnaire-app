@@ -159,7 +159,7 @@ const Step3 = () => {
             )}
           </div>
         ))}
-        <div className="flex flex-col sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-row sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
           <button
             onClick={handleBack}
             className="bg-pink-200 px-6 py-3 text-black font-bold rounded-full hover:bg-gray-700 transition flex items-center gap-2"
@@ -184,9 +184,8 @@ const Step3 = () => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading} // Disable button when loading
-            className="bg-white text-gray-800 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-pink-300 transition duration-200 text-sm sm:text-base flex items-center justify-center"
-          >
+            disabled={loading} 
+            className="bg-white px-6 py-3 text-black font-bold rounded-full hover:bg-white transition flex items-center gap-2">
             {loading ? (
               <svg
                 className="w-5 h-5 animate-spin mr-2"

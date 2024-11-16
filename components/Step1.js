@@ -91,7 +91,7 @@ const Step1 = () => {
   
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-800 to-black">
+    <div className="flex items-center justify-center min-h-screen  bg-gradient-to-r from-[#4D4D4D] to-[#010101]">
       <div className="relative flex w-full max-w-6xl px-4 md:px-10 flex-col md:flex-row">
         <Image
           src={unionShape}
